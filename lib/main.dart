@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_widgets/selector.dart';
 
 void main() {
   runApp(const MyApp());
@@ -61,6 +64,14 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  final List<String> data = <String>[
+    'china',
+    'sdsd',
+    'ssss',
+    '22222',
+    'dddd',
+    'dddddddss'
+  ];
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -98,6 +109,18 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'You have pushed the button this many times:',
             ),
+            SizedBox(
+                width: 240,
+                child: Card(
+                    child: Selector(
+                        initValue: 'china',
+                        itemBuilder: (context, value) {
+                          return Text(
+                            value,
+                            style: TextStyle(color: Colors.black, fontSize: 12),
+                          );
+                        },
+                        data: data))),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
