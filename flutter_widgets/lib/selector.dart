@@ -14,7 +14,7 @@ class Selector extends StatefulWidget {
   final double? elevation;
   final double? radius;
   final Color? itemSelectedColor;
-
+  final Function(String newValue) onValueChanged;
   final Widget Function(
     BuildContext context,
     String value,
@@ -33,7 +33,8 @@ class Selector extends StatefulWidget {
       this.itemBackgroundColor,
       this.elevation,
       this.radius,
-      this.itemSelectedColor});
+      this.itemSelectedColor,
+      required this.onValueChanged});
   @override
   State<StatefulWidget> createState() => _SelectorState();
 }
@@ -41,7 +42,7 @@ class Selector extends StatefulWidget {
 class _SelectorState extends State<Selector> {
   late final List<Widget> children = [];
   late final EdgeInsets padding = widget.padding ??
-      const EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 8);
+      const EdgeInsets.only(left: 16, right: 16, bottom: 12, top: 12);
   late final GlobalKey globalKey = GlobalKey();
   late final RelativeRect relativeRect;
   late final ValueNotifier<String> valueNotifier =
@@ -73,16 +74,22 @@ class _SelectorState extends State<Selector> {
     Duration duration = const Duration(milliseconds: 250);
     final TextStyle textStyle =
         widget.textStyle ?? const TextStyle(color: Colors.black, fontSize: 16);
-    children.add(ValueListenableBuilder<String>(
-        valueListenable: valueNotifier,
-        builder: (context, value, child) {
-          return AnimatedSwitcher(
-              duration: duration,
-              child: Text(value, key: ValueKey(value), style: textStyle),
-              transitionBuilder: (child, animation) {
-                return FadeTransition(opacity: animation, child: child);
-              });
-        }));
+    children.add(Expanded(
+        child: ValueListenableBuilder<String>(
+            valueListenable: valueNotifier,
+            builder: (context, value, child) {
+              return AnimatedSwitcher(
+                  duration: duration,
+                  child: Text(
+                    value,
+                    key: ValueKey(value),
+                    style: textStyle,
+                    textAlign: TextAlign.start,
+                  ),
+                  transitionBuilder: (child, animation) {
+                    return FadeTransition(opacity: animation, child: child);
+                  });
+            })));
 
     if (widget.trailing != null) {
       children.add(widget.trailing!);
@@ -128,8 +135,11 @@ class _SelectorState extends State<Selector> {
                           itemCount: widget.data.length)),
                   rect: relativeRect))
               .then((value) {
-            final String newValue = value[0];
-            valueNotifier.value = newValue;
+            if (value != null) {
+              final String newValue = value[0];
+              valueNotifier.value = newValue;
+              widget.onValueChanged(newValue);
+            }
           });
         },
         child: Container(
