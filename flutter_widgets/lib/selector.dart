@@ -65,7 +65,6 @@ class _SelectorState extends State<Selector> {
               container.localToGlobal(container.size.bottomRight(Offset.zero),
                   ancestor: overlay)),
           Offset.zero & overlay.size);
-      debugPrint('${relativeRect.left}${relativeRect.right}');
     });
 
     if (widget.leading != null) {
